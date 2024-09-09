@@ -158,6 +158,8 @@ class ChattingActivity : AppCompatActivity() {
                     binding.messageInputET.text.clear()
                     // Uncheck the isImportant checkbox
                     binding.importantMessageCB.isChecked = false
+                    // Clear the scheduled time
+                    scheduledTimeInMillis = null
                 } else {
                     Toast.makeText(this, "Scheduled time must be in the future", Toast.LENGTH_SHORT)
                         .show()
@@ -213,10 +215,6 @@ class ChattingActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
 //......
 
     private fun showTimePickerDialog() {
@@ -261,9 +259,11 @@ class ChattingActivity : AppCompatActivity() {
                     db.scheduledMessageDao().insert(scheduledMessage)
                 }
 
-                // Schedule WorkManager
+                // Prepare data for WorkManager
                 val workData = workDataOf(
-                    "CHATROOM_ID" to chatroomId
+                    "CHATROOM_ID" to chatroomId,
+                    "RECIPIENT_USER_ID" to otherUser.userId,
+                    "RECIPIENT_TOKEN" to otherUser.fcmToken // Assuming this is the FCM token of the recipient
                 )
 
                 val workRequest = OneTimeWorkRequestBuilder<SendMessageWorker>()
