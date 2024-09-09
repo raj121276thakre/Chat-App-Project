@@ -1,0 +1,224 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/whiteBackground"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".fragments.ProfileFragment">
+
+
+    <!-- Profile Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_background"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/circle_background"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_user_placeholder" />
+
+            <ImageView
+                android:id="@+id/edit_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignEnd="@id/profile_image"
+                android:layout_alignBottom="@id/profile_image"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/edit_icon_background"
+                android:padding="4dp"
+                android:src="@drawable/ic_edit" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Kevin Backer"
+            android:textColor="@color/darkGrayText"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/profile_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="+911234567890"
+            android:textColor="@color/grayText2"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/profile_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Hey"
+            android:textColor="@color/grayText"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blueIcon" />
+
+    <!-- Edit Profile Button -->
+    <Button
+        android:id="@+id/update_profile_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:backgroundTint="@color/bluePrimary"
+        android:text="Update Profile"
+        android:textColor="@color/whiteBackground" />
+
+    <!-- Settings Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@color/lightGrayBackground"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+        <!-- Language -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/circle_background"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/language_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_language"
+                app:tint="@color/blueIcon" />
+
+            <TextView
+                android:id="@+id/language_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/language_icon"
+                android:text="Language"
+                android:textColor="@color/darkGrayText"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/language_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="English"
+                android:textColor="@color/grayText" />
+
+        </RelativeLayout>
+
+        <!-- Font Size -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/circle_background"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/font_size_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_font_size"
+                app:tint="@color/blueIcon" />
+
+            <TextView
+                android:id="@+id/font_size_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/font_size_icon"
+                android:text="Font Size"
+                android:textColor="@color/darkGrayText"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/font_size_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="Default"
+                android:textColor="@color/grayText" />
+
+        </RelativeLayout>
+
+        <!-- Dark Mode -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/circle_background"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/dark_mode_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_dark_mode"
+                app:tint="@color/blueIcon" />
+
+            <TextView
+                android:id="@+id/dark_mode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/dark_mode_icon"
+                android:text="Dark Mode"
+                android:textColor="@color/darkGrayText"
+                android:textStyle="bold" />
+
+            <Switch
+                android:id="@+id/dark_mode_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:checked="false" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_gravity="center"
+        android:id="@+id/logout_btn"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/blueIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout" />
+
+</LinearLayout>

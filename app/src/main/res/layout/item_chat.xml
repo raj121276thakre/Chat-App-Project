@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/circle_background"
+    android:layout_margin="2dp"
+    android:padding="12dp">
+
+
+    <include
+        android:id="@+id/ivProfileImageLL"
+        layout="@layout/profile_picture_view"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_height="wrap_content"
+        tools:text="Username"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/ivProfileImageLL"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvLastMessage"
+        android:layout_width="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_height="wrap_content"
+        tools:text="Last message"
+        android:textSize="16sp"
+        android:maxLength="27"
+        android:maxLines="1"
+        app:layout_constraintLeft_toRightOf="@id/ivProfileImageLL"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvUsername" />
+
+    <TextView
+        android:id="@+id/lastMsgTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="10:21 AM"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvUsername"
+        app:layout_constraintBottom_toBottomOf="@id/tvUsername"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

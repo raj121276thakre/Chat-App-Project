@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="end">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:progressTint="@color/blueIcon"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_outgoing_message"
+                android:padding="12dp"
+                android:text="Outgoing message text"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
+
+        <TextView
+            android:id="@+id/tvTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="10:21 AM"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>
