@@ -8,15 +8,20 @@ import com.example.chatapp.models.User
 import com.example.chatapp.notification.AccessToken
 import com.example.chatapp.scheduleMessage.database.AppDatabase
 import com.example.chatapp.utils.FirebaseUtil.currentUserDetails
+import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
@@ -144,7 +149,7 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
         }
     }
 
-
+/*
 //    Imp message notification not working
     private fun sendImportantMessageNotification(message: String, recipientToken: String) {
         currentUserDetails().get().addOnCompleteListener { task ->
@@ -207,6 +212,70 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
         }
     }
 
+ */
 
+    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
+        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
+            if (task.isSuccessful) {
+                val currentUser: User? = task.result.toObject(User::class.java)
+                try {
+                    val client = OkHttpClient()
+
+                    val jsonPayload = JSONObject()
+                        .put(
+                            "message", JSONObject()
+                                .put("token", recipientToken)
+                                .put(
+                                    "notification", JSONObject() // Add notification settings
+                                        .put("title", currentUser!!.username)  // Sender's name
+                                        .put("body", message)  // Message content
+                                        .put("sound", "default")  // Default sound (ringtone)
+                                )
+                                .put(
+                                    "data", JSONObject() // Include custom data payload
+                                        .put("title", currentUser!!.username)  // Sender's name
+                                        .put("body", message)  // Message content
+                                        .put("isImportant", true.toString())  // Mark message as important
+                                )
+                                .put(
+                                    "android", JSONObject()
+                                        .put("priority", "high")  // High priority for urgent delivery
+                                        .put(
+                                            "notification", JSONObject()
+                                                .put("vibrate", true)  // Ensure vibration is enabled
+                                                .put("sound", "default")  // Default sound (ringtone)
+                                        )
+                                )
+                        )
+
+
+                    val mediaType = "application/json; charset=utf-8".toMediaType()
+                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
+                    val request = Request.Builder()
+                        .url("https://fcm.googleapis.com/v1/projects/your-project-id/messages:send")
+                        .post(requestBody)
+                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+
+                    client.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            e.printStackTrace()
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            if (!response.isSuccessful) {
+                                println("Failed to send notification: ${response.code}")
+                            } else {
+                                println("Notification sent successfully")
+                            }
+                        }
+                    })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
 
 }

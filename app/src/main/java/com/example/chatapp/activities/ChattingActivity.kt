@@ -68,7 +68,6 @@ import kotlinx.coroutines.launch
 
 class ChattingActivity : AppCompatActivity() {
 
-
     /////////////////////////  Imp Message ring only working when App is opened /////////////////////////////
 
     private lateinit var binding: ActivityChattingBinding
@@ -476,7 +475,7 @@ class ChattingActivity : AppCompatActivity() {
 
     }
 
-
+/*
     //..............    // Function to send Important notification using Firebase Cloud Messaging API (HTTP v1)
     private fun sendImportantMessageNotification(message: String, recipientToken: String) {
         currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
@@ -547,6 +546,99 @@ class ChattingActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
+ */
+
+
+    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
+        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
+            if (task.isSuccessful) {
+                val currentUser: User? = task.result.toObject(User::class.java)
+                try {
+                    val client = OkHttpClient()
+
+                    val jsonPayload = JSONObject()
+                        .put(
+                            "message", JSONObject()
+                                .put("token", recipientToken)
+                                .put(
+                                    "data", JSONObject() // Custom data payload
+                                        .put("title", currentUser!!.username) // Sender's name
+                                        .put("body", message) // Message content
+                                        .put("isImportant", true.toString()) // Mark message as important
+                                )
+                                .put(
+                                    "android", JSONObject()
+                                        .put("priority", "high") // High priority for urgent delivery
+                                        .put(
+                                            "notification", JSONObject()
+                                                .put("vibrate", true) // Ensure vibration is enabled
+                                                .put("sound", "default") // Default sound (ringtone)
+                                        )
+                                )
+                        )
+
+
+//                    val jsonPayload = JSONObject()
+//                        .put(
+//                            "message", JSONObject()
+//                                .put("token", recipientToken)
+//                                .put(
+//                                    "notification", JSONObject() // Add notification settings
+//                                        .put("title", currentUser!!.username)  // Sender's name
+//                                        .put("body", message)  // Message content
+//                                        .put("sound", "default")  // Default sound (ringtone)
+//                                )
+//                                .put(
+//                                    "data", JSONObject() // Include custom data payload
+//                                        .put("title", currentUser!!.username)  // Sender's name
+//                                        .put("body", message)  // Message content
+//                                        .put("isImportant", true.toString())  // Mark message as important
+//                                )
+//                                .put(
+//                                    "android", JSONObject()
+//                                        .put("priority", "high")  // High priority for urgent delivery
+//                                        .put(
+//                                            "notification", JSONObject()
+//                                                .put("vibrate", true)  // Ensure vibration is enabled
+//                                                .put("sound", "default")  // Default sound (ringtone)
+//                                        )
+//                                )
+//                        )
+
+
+                    val mediaType = "application/json; charset=utf-8".toMediaType()
+                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
+                    val request = Request.Builder()
+                        .url("https://fcm.googleapis.com/v1/projects/your-project-id/messages:send")
+                        .post(requestBody)
+                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+
+                    client.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            e.printStackTrace()
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            if (!response.isSuccessful) {
+                                println("Failed to send notification: ${response.code}")
+                            } else {
+                                println("Notification sent successfully")
+                            }
+                        }
+                    })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+
 
 
     // Function to send notification using Firebase Cloud Messaging API (HTTP v1)
