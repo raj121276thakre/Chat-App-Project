@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 
 
 
@@ -28,6 +29,11 @@
 
         <meta-data android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/blueIcon"/>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/important_message_channel" />
+
 
 
         <activity
@@ -60,15 +66,6 @@
             </intent-filter>
         </activity>
 
-         <!-- notification Service-->
-<!--        <service-->
-<!--            android:name=".notification.FirebaseMessaging"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
-
         <service
             android:name=".notification.FirebaseMessaging"
             android:exported="true">
@@ -76,6 +73,12 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".notification.ImportantMessageService"
+            android:foregroundServiceType="mediaPlayback"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:exported="true" />
 
 
 
