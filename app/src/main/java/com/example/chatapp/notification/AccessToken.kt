@@ -35,7 +35,7 @@ object AccessToken {
             googleCredentials.refreshIfExpired()
 
             return googleCredentials.accessToken.tokenValue
-        }catch (e: IOException){
+        } catch (e: IOException) {
 
             return null
 

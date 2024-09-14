@@ -17,7 +17,6 @@ import com.example.chatapp.utils.Utils
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.DocumentSnapshot
-import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -35,41 +34,41 @@ class RecentChatAdapter(
                 // Proceed with the valid DocumentReference
 
                 otherUserRef.get().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                    if (task.isSuccessful) {
+                        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
-                            val lastMessageSentByMe: Boolean =
-                                chat.lastMessageSenderId.equals(FirebaseUtil.currentUserId())
+                        val lastMessageSentByMe: Boolean =
+                            chat.lastMessageSenderId.equals(FirebaseUtil.currentUserId())
 
-                            val otherUserModel: User? = task.getResult().toObject(User::class.java)
-                            binding.tvUsername.text = otherUserModel!!.username
+                        val otherUserModel: User? = task.getResult().toObject(User::class.java)
+                        binding.tvUsername.text = otherUserModel!!.username
 
-                            if (lastMessageSentByMe)
-                                binding.tvLastMessage.text = "You: ${chat.lastMessage}"
-                            else
-                                binding.tvLastMessage.text = chat.lastMessage
-                            binding.lastMsgTimestamp.text =
-                                chat.lastMessageTimestamp?.toDate()?.let { timeFormat.format(it) } ?: ""
+                        if (lastMessageSentByMe)
+                            binding.tvLastMessage.text = "You: ${chat.lastMessage}"
+                        else
+                            binding.tvLastMessage.text = chat.lastMessage
+                        binding.lastMsgTimestamp.text =
+                            chat.lastMessageTimestamp?.toDate()?.let { timeFormat.format(it) } ?: ""
 
-                            // Access the CircleImageView using ViewBinding
-                            val profileImage = binding.ivProfileImageLL.profilePicImageView
+                        // Access the CircleImageView using ViewBinding
+                        val profileImage = binding.ivProfileImageLL.profilePicImageView
 
-                            // Load the profile picture using Glide
-                            Glide.with(profileImage.context)
-                                .load(otherUserModel?.profilePictureUrl)
-                                .placeholder(R.drawable.ic_user_placeholder)
-                                .into(profileImage)
+                        // Load the profile picture using Glide
+                        Glide.with(profileImage.context)
+                            .load(otherUserModel?.profilePictureUrl)
+                            .placeholder(R.drawable.ic_user_placeholder)
+                            .into(profileImage)
 
 
-                            binding.root.setOnClickListener {
-                                val intent = Intent(context, ChattingActivity::class.java)
-                                Utils.passUserModelAsIntent(intent, otherUserModel)
-                                context.startActivity(intent)
-                            }
-
+                        binding.root.setOnClickListener {
+                            val intent = Intent(context, ChattingActivity::class.java)
+                            Utils.passUserModelAsIntent(intent, otherUserModel)
+                            context.startActivity(intent)
                         }
 
                     }
+
+                }
 
             } else {
                 // Handle the error case (e.g., log, skip, show error message)
@@ -78,7 +77,6 @@ class RecentChatAdapter(
                     "Failed to get a valid document reference for the other user."
                 )
             }
-
 
 
         }

@@ -14,10 +14,10 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 import com.example.chatapp.R
 import com.example.chatapp.activities.SplashActivity
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
 class FirebaseMessaging : FirebaseMessagingService() {
 
@@ -34,7 +34,10 @@ class FirebaseMessaging : FirebaseMessagingService() {
             val isImportant = message.data["isImportant"]?.toBoolean() ?: false
 
             // Log data for debugging
-            Log.d("FirebaseMessaging", "Received notification with title: $title, body: $body, isImportant: $isImportant")
+            Log.d(
+                "FirebaseMessaging",
+                "Received notification with title: $title, body: $body, isImportant: $isImportant"
+            )
 
             if (title == null || body == null) {
                 Log.e("FirebaseMessaging", "Notification title or body is missing.")
@@ -53,9 +56,6 @@ class FirebaseMessaging : FirebaseMessagingService() {
     }
 
 
-
-
-
     private fun showNotification(title: String, body: String, isImportant: Boolean) {
         // Create notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -66,7 +66,8 @@ class FirebaseMessaging : FirebaseMessagingService() {
                 val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
                 setSound(soundUri, Notification.AUDIO_ATTRIBUTES_DEFAULT)
             }
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 

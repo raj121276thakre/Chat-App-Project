@@ -75,7 +75,6 @@ class ChatMessageAdapter(
     }
 
 
-
     override fun getItemViewType(position: Int): Int {
         val chatMessageModel = getItem(position)
         return if (chatMessageModel.senderId == currentUserId) {

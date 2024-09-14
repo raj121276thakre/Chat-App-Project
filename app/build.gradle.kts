@@ -41,7 +41,7 @@ android {
     }
 
 // for notification
-    packagingOptions{
+    packagingOptions {
         exclude("META-INF/DEPENDENCIES")
         exclude("mozilla/public-suffix-list.txt") // Add this line to exclude the conflicting file
     }
@@ -61,13 +61,13 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.messaging)
-    
 
-    implementation ("androidx.room:room-runtime:2.6.1")
-    implementation ("androidx.room:room-ktx:2.5.1")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.5.1")
 
     // To use Kotlin annotation processing tool (kapt)
-    kapt ("androidx.room:room-compiler:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -90,23 +90,22 @@ dependencies {
     // FirebaseUI for Cloud Firestore
     implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
 
-// Glide
+    // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-//okhttp3
+    //okhttp3
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
 
-// for notification
+    // for notification
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-   // implementation("com.karumi:dexter:6.2.3")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
 
+    // implementation("com.karumi:dexter:6.2.3")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
 
     //for scheduling message
     implementation("androidx.work:work-runtime-ktx:2.8.0")  // Check for the latest version
-
 
 
 }

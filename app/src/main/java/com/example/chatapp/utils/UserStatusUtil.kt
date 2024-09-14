@@ -1,4 +1,3 @@
-
 package com.example.chatapp.utils
 
 import android.content.Context
@@ -19,39 +18,6 @@ object UserStatusUtil {
                 Log.e("FirebaseUtil", "Error updating status", e)
             }
     }
-
-//    fun updateUserStatus(userId: String, status: String) {
-//        val userRef = FirebaseUtil.allUserCollectionReference().document(userId)
-//
-//        userRef.get()
-//            .addOnSuccessListener { document ->
-//                if (document != null && document.exists()) {
-//                    // Document exists, update the status field
-//                    userRef.update("status", status)
-//                        .addOnSuccessListener {
-//                            Log.d("FirebaseUtil", "Status updated successfully: $status")
-//                        }
-//                        .addOnFailureListener { e ->
-//                            Log.e("FirebaseUtil", "Error updating status", e)
-//                        }
-//                } else {
-//                    // Document does not exist, create it with the status field
-//                    userRef.set(mapOf("status" to status))
-//                        .addOnSuccessListener {
-//                            Log.d("FirebaseUtil", "Document created with status: $status")
-//                        }
-//                        .addOnFailureListener { e ->
-//                            Log.e("FirebaseUtil", "Error creating document", e)
-//                        }
-//                }
-//            }
-//            .addOnFailureListener { e ->
-//                Log.e("FirebaseUtil", "Error fetching document", e)
-//            }
-//    }
-
-
-
 
 
     fun listenToUserStatus(userId: String, onStatusChanged: (String?) -> Unit) {

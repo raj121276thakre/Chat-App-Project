@@ -21,11 +21,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var profilePic : ImageView
+    private lateinit var profilePic: ImageView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +33,6 @@ class ProfileFragment : Fragment() {
 
         return binding.root
     }
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,8 +97,6 @@ class ProfileFragment : Fragment() {
             binding.updateProfileButton.visibility = View.VISIBLE
         }
     }
-
-
 
 
     override fun onDestroyView() {

@@ -1,7 +1,6 @@
 package com.example.chatapp.utils
 
 import android.util.Log
-import com.example.chatapp.models.ChatRoomModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
@@ -53,18 +52,16 @@ object FirebaseUtil {
     }
 
 
-
-
     fun getChatroomReference(chatroomId: String): DocumentReference {
 
         return FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId)
     }
 
     fun getChatroomId(userId1: String, userId2: String): String {
-        if (userId1.hashCode()<userId2.hashCode()){
-            return userId1+"_"+userId2
-        }else{
-            return userId2+"_"+userId1
+        if (userId1.hashCode() < userId2.hashCode()) {
+            return userId1 + "_" + userId2
+        } else {
+            return userId2 + "_" + userId1
         }
     }
 
@@ -72,9 +69,6 @@ object FirebaseUtil {
 
         return getChatroomReference(chatroomId).collection("chats")
     }
-
-
-
 
 
     fun logout() {
@@ -94,9 +88,6 @@ object FirebaseUtil {
     }
 
 
-
-
-
     fun updateMessageStatus(chatroomId: String, messageId: String, isScheduled: Boolean) {
         val chatroomReference = getChatroomMessageReference(chatroomId)
             .document(messageId)
@@ -109,10 +100,6 @@ object FirebaseUtil {
                 e.printStackTrace()
             }
     }
-
-
-
-
 
 
 }

@@ -15,7 +15,6 @@ import com.example.chatapp.adapter.SearchUserAdapter
 import com.example.chatapp.databinding.ActivitySearchUserBinding
 import com.example.chatapp.models.User
 import com.example.chatapp.utils.Utils
-import com.example.chatapp.utils.Utils.passUserModelAsIntent
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -64,7 +63,7 @@ class SearchUserActivity : AppCompatActivity() {
 
     }
 
-
+    // Configures the RecyclerView to display a list of users based on the search input
     private fun setUpRecyclerView(searchText: String) {
         // Log the search text
         Log.d("SearchUserActivity", "Searching for: $searchText")
@@ -103,13 +102,12 @@ class SearchUserActivity : AppCompatActivity() {
         adapter?.startListening()
     }
 
-
+    // Navigates to the chat screen when a user is selected from the search results
     private fun navigateToChatScreen(user: User) {
         val intent = Intent(this, ChattingActivity::class.java)
         Utils.passUserModelAsIntent(intent, user)
         startActivity(intent)
     }
-
 
 
     override fun onStart() {

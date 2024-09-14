@@ -9,12 +9,12 @@ import com.example.chatapp.notification.AccessToken
 import com.example.chatapp.scheduleMessage.database.AppDatabase
 import com.example.chatapp.utils.FirebaseUtil.currentUserDetails
 import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,7 +25,8 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class SendMessageWorker(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
+class SendMessageWorker(context: Context, workerParams: WorkerParameters) :
+    CoroutineWorker(context, workerParams) {
     private val db: AppDatabase by lazy {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app_database").build()
     }
@@ -57,7 +58,8 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
                 .collection("chats")
 
             try {
-                chatroomReference.add(chatMessageModel).await() // Use await() for coroutine compatibility
+                chatroomReference.add(chatMessageModel)
+                    .await() // Use await() for coroutine compatibility
 
 
                 // Check if the message is important
@@ -79,8 +81,6 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
 
         return Result.success()
     }
-
-
 
 
     private fun sendNotificationAfterSaving(message: String, recipientToken: String) {
@@ -149,70 +149,70 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
         }
     }
 
-/*
-//    Imp message notification not working
-    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
-        currentUserDetails().get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val currentUser: User? = task.result.toObject(User::class.java)
-                try {
-                    val client = OkHttpClient()
+    /*
+    //    Imp message notification not working
+        private fun sendImportantMessageNotification(message: String, recipientToken: String) {
+            currentUserDetails().get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val currentUser: User? = task.result.toObject(User::class.java)
+                    try {
+                        val client = OkHttpClient()
 
-                    val jsonPayload = JSONObject()
-                        .put(
-                            "message", JSONObject()
-                                .put("token", recipientToken)
-                                .put(
-                                    "notification", JSONObject()
-                                        .put("title", currentUser!!.username)
-                                        .put("body", message)
-                                        .put("sound", "default") // Play the default sound
-                                )
-                                .put(
-                                    "data", JSONObject() // Include the data payload
-                                        .put("isImportant", "true") // Pass isImportant as true
-                                )
-                                .put(
-                                    "android", JSONObject()
-                                        .put("priority", "high")
-                                        .put(
-                                            "notification", JSONObject()
-                                                .put("sound", "default") // Ensure this matches the default sound setup
-                                        )
-                                )
-                        )
+                        val jsonPayload = JSONObject()
+                            .put(
+                                "message", JSONObject()
+                                    .put("token", recipientToken)
+                                    .put(
+                                        "notification", JSONObject()
+                                            .put("title", currentUser!!.username)
+                                            .put("body", message)
+                                            .put("sound", "default") // Play the default sound
+                                    )
+                                    .put(
+                                        "data", JSONObject() // Include the data payload
+                                            .put("isImportant", "true") // Pass isImportant as true
+                                    )
+                                    .put(
+                                        "android", JSONObject()
+                                            .put("priority", "high")
+                                            .put(
+                                                "notification", JSONObject()
+                                                    .put("sound", "default") // Ensure this matches the default sound setup
+                                            )
+                                    )
+                            )
 
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
-                    val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/chat-app-15577/messages:send")
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
-                        .addHeader("Content-Type", "application/json")
-                        .build()
+                        val mediaType = "application/json; charset=utf-8".toMediaType()
+                        val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
+                        val request = Request.Builder()
+                            .url("https://fcm.googleapis.com/v1/projects/chat-app-15577/messages:send")
+                            .post(requestBody)
+                            .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
+                            .addHeader("Content-Type", "application/json")
+                            .build()
 
-                    client.newCall(request).enqueue(object : okhttp3.Callback {
-                        override fun onFailure(call: okhttp3.Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                            if (!response.isSuccessful) {
-                                println("Failed to send notification: ${response.code}")
-                                println("Response body: ${response.body?.string()}")
-                            } else {
-                                println("Important notification sent successfully")
+                        client.newCall(request).enqueue(object : okhttp3.Callback {
+                            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                                e.printStackTrace()
                             }
-                        }
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
+
+                            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                                if (!response.isSuccessful) {
+                                    println("Failed to send notification: ${response.code}")
+                                    println("Response body: ${response.body?.string()}")
+                                } else {
+                                    println("Important notification sent successfully")
+                                }
+                            }
+                        })
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
-    }
 
- */
+     */
 
     private fun sendImportantMessageNotification(message: String, recipientToken: String) {
         currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
@@ -235,15 +235,27 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) : Coro
                                     "data", JSONObject() // Include custom data payload
                                         .put("title", currentUser!!.username)  // Sender's name
                                         .put("body", message)  // Message content
-                                        .put("isImportant", true.toString())  // Mark message as important
+                                        .put(
+                                            "isImportant",
+                                            true.toString()
+                                        )  // Mark message as important
                                 )
                                 .put(
                                     "android", JSONObject()
-                                        .put("priority", "high")  // High priority for urgent delivery
+                                        .put(
+                                            "priority",
+                                            "high"
+                                        )  // High priority for urgent delivery
                                         .put(
                                             "notification", JSONObject()
-                                                .put("vibrate", true)  // Ensure vibration is enabled
-                                                .put("sound", "default")  // Default sound (ringtone)
+                                                .put(
+                                                    "vibrate",
+                                                    true
+                                                )  // Ensure vibration is enabled
+                                                .put(
+                                                    "sound",
+                                                    "default"
+                                                )  // Default sound (ringtone)
                                         )
                                 )
                         )

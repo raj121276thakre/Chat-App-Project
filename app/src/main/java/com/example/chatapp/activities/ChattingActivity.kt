@@ -2,11 +2,11 @@ package com.example.chatapp.activities
 
 import android.app.AlertDialog
 import android.app.TimePickerDialog
-import android.content.BroadcastReceiver
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.CheckBox
 import android.widget.RelativeLayout
 import android.widget.Toast
@@ -14,20 +14,28 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.bumptech.glide.Glide
 import com.example.chatapp.R
 import com.example.chatapp.adapter.ChatMessageAdapter
+import com.example.chatapp.adapter.ScheduledMessageAdapter
 import com.example.chatapp.databinding.ActivityChattingBinding
 import com.example.chatapp.models.ChatMessageModel
 import com.example.chatapp.models.ChatRoomModel
 import com.example.chatapp.models.User
 import com.example.chatapp.notification.AccessToken
+import com.example.chatapp.scheduleMessage.SendMessageWorker
+import com.example.chatapp.scheduleMessage.database.AppDatabase
+import com.example.chatapp.scheduleMessage.database.ScheduledMessage
 import com.example.chatapp.utils.FirebaseUtil
 import com.example.chatapp.utils.FirebaseUtil.currentUserDetails
+import com.example.chatapp.utils.UserStatusUtil
 import com.example.chatapp.utils.Utils
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.gms.tasks.Task
@@ -36,6 +44,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -48,45 +59,30 @@ import java.io.IOException
 import java.util.Arrays
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.view.LayoutInflater
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
-import androidx.work.WorkRequest
-import com.example.chatapp.adapter.ScheduledMessageAdapter
-import com.example.chatapp.scheduleMessage.SendMessageWorker
-import com.example.chatapp.scheduleMessage.database.AppDatabase
-import com.example.chatapp.scheduleMessage.database.ScheduledMessage
-import com.example.chatapp.utils.UserStatusUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class ChattingActivity : AppCompatActivity() {
 
-    /////////////////////////  Imp Message ring only working when App is opened /////////////////////////////
-
+    // ViewBinding object for accessing layout views
     private lateinit var binding: ActivityChattingBinding
 
+    // Variables for other user data, chatroom, and adapter
     private lateinit var otherUser: User
     private lateinit var chatroomId: String
     private lateinit var chatRoomModel: ChatRoomModel
     private lateinit var adapter: ChatMessageAdapter
 
+    // Checkbox for marking important messages
     private lateinit var importantMessageCB: CheckBox
     private var isImportant: Boolean = false
 
+    // Stores the scheduled time for sending a message
     private var scheduledTimeInMillis: Long? = null
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // Enable edge-to-edge layout
+        // Set up view binding for accessing layout elements
         binding = ActivityChattingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.chattingActivityLayout)) { v, insets ->
@@ -94,73 +90,67 @@ class ChattingActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        // Retrieve the User object from the Intent
+
+        // Retrieve the other user's details from Intent and get chatroom ID
         otherUser = Utils.getUserModelFromIntent(intent) ?: User()
         chatroomId = FirebaseUtil.getChatroomId(FirebaseUtil.currentUserId()!!, otherUser.userId)
 
+        // Set up chat and other required components
         setupChat()
+        listenToOtherUserStatus() // Track the other user's online status
+        adjustLayoutForKeyboard() // Adjust layout when the keyboard appears
 
-        listenToOtherUserStatus()
+        // Go back button click listener
+        binding.goBackBtn.setOnClickListener { onBackPressed() }
 
-        // Call the function to adjust layout for keyboard
-        adjustLayoutForKeyboard()
-
-        binding.goBackBtn.setOnClickListener {
-            onBackPressed()
-        }
-
+        // Set up the chatroom model and message RecyclerView
         getOrCreateChatroomModel()
         setUpChatRecyclerview()
 
-        // added for getting accessToken
+        // Set up network policy for making HTTP requests in the main thread
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+        // Subscribe to a Firebase messaging topic
         FirebaseMessaging.getInstance().subscribeToTopic("test")
 
-
-
+        // Initialize the important message checkbox
         importantMessageCB = findViewById(R.id.importantMessageCB)
         isImportant = importantMessageCB.isChecked
 
-
-        //............
-        // Set up click listeners
+        // Schedule message time button click listener
         binding.scheduleMsgTimeBtn.setOnClickListener {
-            showTimePickerDialog()
+            showTimePickerDialog() // Show time picker dialog to schedule messages
         }
 
+        // Send message button click listener
         binding.sendMessageBtn.setOnClickListener {
             val message = binding.messageInputET.text.toString().trim()
             if (message.isEmpty()) {
                 Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
+            // If a scheduled time is set, schedule the message for later
             if (scheduledTimeInMillis != null) {
                 val scheduledTime = scheduledTimeInMillis!!
                 val currentTime = System.currentTimeMillis()
                 if (scheduledTime > currentTime) {
                     scheduleMessage(message)
-                    // Clear the message from the EditText only after scheduling
+                    // Clear input after scheduling the message
                     binding.messageInputET.text.clear()
-                    // Uncheck the isImportant checkbox
                     binding.importantMessageCB.isChecked = false
-                    // Clear the scheduled time
                     scheduledTimeInMillis = null
                 } else {
                     Toast.makeText(this, "Scheduled time must be in the future", Toast.LENGTH_SHORT)
                         .show()
                 }
             } else {
+                // Otherwise, send the message immediately
                 sendMessageToUser(message)
-
             }
         }
 
-
-        //............//
-
+        // Menu icon click listener to show scheduled messages
         binding.ivMenu.setOnClickListener {
             showScheduledMessagesDialog()
         }
@@ -168,7 +158,7 @@ class ChattingActivity : AppCompatActivity() {
 
     }
 
-
+    // Show dialog containing all scheduled messages
     private fun showScheduledMessagesDialog() {
         val db = Room.databaseBuilder(
             applicationContext,
@@ -186,7 +176,8 @@ class ChattingActivity : AppCompatActivity() {
                     .inflate(R.layout.dialog_scheduled_messages, null)
 
                 // Set up the RecyclerView
-                val recyclerView: RecyclerView = dialogView.findViewById(R.id.recycler_view_scheduled_messages)
+                val recyclerView: RecyclerView =
+                    dialogView.findViewById(R.id.recycler_view_scheduled_messages)
                 recyclerView.layoutManager = LinearLayoutManager(this@ChattingActivity)
                 recyclerView.adapter = ScheduledMessageAdapter(messages)
 
@@ -197,14 +188,16 @@ class ChattingActivity : AppCompatActivity() {
                     .setPositiveButton("OK", null)
                     .show()
             } catch (e: Exception) {
-                Toast.makeText(this@ChattingActivity, "Error loading messages: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@ChattingActivity,
+                    "Error loading messages: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
 
-
-//......
-
+    // Show time picker to select a scheduled time for message
     private fun showTimePickerDialog() {
         val calendar = Calendar.getInstance()
         val timePicker = TimePickerDialog(
@@ -224,6 +217,7 @@ class ChattingActivity : AppCompatActivity() {
         timePicker.show()
     }
 
+    // Schedule a message to be sent later using WorkManager
     private fun scheduleMessage(message: String) {
         scheduledTimeInMillis?.let { scheduledTime ->
             val delay = scheduledTime - System.currentTimeMillis()
@@ -269,15 +263,13 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
-
-//......
-
-
+    // Utility method to convert dp to px
     private fun dpToPx(dp: Int): Int {
         val density = resources.displayMetrics.density
         return (dp * density).toInt()
     }
 
+    // Adjust the layout when the keyboard is shown or hidden
     private fun adjustLayoutForKeyboard() {
         val rootView = binding.chattingActivityLayout
         val layoutMessageInput = binding.layoutMessageInput
@@ -306,7 +298,7 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
-
+    // Set up the chat RecyclerView with Firestore messages
     private fun setUpChatRecyclerview() {
         val query: Query = FirebaseUtil.getChatroomMessageReference(chatroomId)
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -361,13 +353,14 @@ class ChattingActivity : AppCompatActivity() {
         )
     }
 
+    // Listen to the other user's online/offline status updates
     private fun listenToOtherUserStatus() {
         UserStatusUtil.listenToUserStatus(otherUser.userId) { status ->
             binding.tvStatus.text = status ?: "Offline"
         }
     }
 
-
+    // Fetches the chatroom model from Firestore or creates one if it doesn't exist
     private fun getOrCreateChatroomModel() {
         val chatRoomReference = FirebaseUtil.getChatroomReference(chatroomId)
 
@@ -408,6 +401,7 @@ class ChattingActivity : AppCompatActivity() {
             }
     }
 
+    // Sets up the chat UI, such as displaying the other user's username and profile picture
     private fun setupChat() {
         // Use user details, e.g., set the username in a TextView
         binding.tvUsername.text = otherUser.username
@@ -423,7 +417,7 @@ class ChattingActivity : AppCompatActivity() {
 
     }
 
-
+    // Sends a message to the other user, updating Firestore with the message data
     private fun sendMessageToUser(message: String) {
         chatRoomModel.lastMessageTimestamp = Timestamp.now()
         chatRoomModel.lastMessageSenderId = FirebaseUtil.currentUserId()!!
@@ -464,164 +458,8 @@ class ChattingActivity : AppCompatActivity() {
 
     }
 
-/*
 
-
-    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
-        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
-            if (task.isSuccessful) {
-                val currentUser: User? = task.result.toObject(User::class.java)
-                try {
-                    val client = OkHttpClient()
-
-                    val jsonPayload = JSONObject()
-                        .put(
-                            "message", JSONObject()
-                                .put("token", recipientToken)
-                                .put(
-                                    "data", JSONObject() // Custom data payload
-                                        .put("title", currentUser!!.username) // Sender's name
-                                        .put("body", message) // Message content
-                                        .put("isImportant", true.toString()) // Mark message as important
-                                )
-                                .put(
-                                    "android", JSONObject()
-                                        .put("priority", "high") // High priority for urgent delivery
-                                        .put(
-                                            "notification", JSONObject()
-                                                .put("vibrate", true) // Ensure vibration is enabled
-                                                .put("sound", "default") // Default sound (ringtone)
-                                        )
-                                )
-                        )
-
-
-//                    val jsonPayload = JSONObject()
-//                        .put(
-//                            "message", JSONObject()
-//                                .put("token", recipientToken)
-//                                .put(
-//                                    "notification", JSONObject() // Add notification settings
-//                                        .put("title", currentUser!!.username)  // Sender's name
-//                                        .put("body", message)  // Message content
-//                                        .put("sound", "default")  // Default sound (ringtone)
-//                                )
-//                                .put(
-//                                    "data", JSONObject() // Include custom data payload
-//                                        .put("title", currentUser!!.username)  // Sender's name
-//                                        .put("body", message)  // Message content
-//                                        .put("isImportant", true.toString())  // Mark message as important
-//                                )
-//                                .put(
-//                                    "android", JSONObject()
-//                                        .put("priority", "high")  // High priority for urgent delivery
-//                                        .put(
-//                                            "notification", JSONObject()
-//                                                .put("vibrate", true)  // Ensure vibration is enabled
-//                                                .put("sound", "default")  // Default sound (ringtone)
-//                                        )
-//                                )
-//                        )
-
-
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
-                    val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/your-project-id/messages:send")
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
-                        .addHeader("Content-Type", "application/json")
-                        .build()
-
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            if (!response.isSuccessful) {
-                                println("Failed to send notification: ${response.code}")
-                            } else {
-                                println("Notification sent successfully")
-                            }
-                        }
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
- */
-
-
-
-    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
-        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
-            if (task.isSuccessful) {
-                val currentUser: User? = task.result?.toObject(User::class.java)
-                try {
-                    val client = OkHttpClient()
-
-                    val jsonPayload = JSONObject().apply {
-                        put("message", JSONObject().apply {
-                            put("token", recipientToken)
-                            put("data", JSONObject().apply {
-                                put("title", currentUser?.username ?: "New Message") // Sender's name
-                                put("body", message) // Message content
-                                put("isImportant", true) // Mark message as important (boolean value)
-                            })
-                            put("android", JSONObject().apply {
-                                put("priority", "high") // High priority for urgent delivery
-                                put("notification", JSONObject().apply {
-                                    put("vibrate", true) // Ensure vibration is enabled
-                                    put("sound", "default") // Default sound (ringtone)
-                                })
-                            })
-                        })
-                    }
-
-
-
-                    // Define the media type and request body
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
-
-                    // Build the request
-                    val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/your-project-id/messages:send")
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
-                        .addHeader("Content-Type", "application/json")
-                        .build()
-
-                    // Execute the request
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            if (!response.isSuccessful) {
-                                println("Failed to send notification: ${response.code}")
-                            } else {
-                                println("Notification sent successfully")
-                            }
-                        }
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
-
-
-    // Function to send notification using Firebase Cloud Messaging API (HTTP v1)
-
-
+    // Sends a regular notification using Firebase Cloud Messaging
     private fun sendNotification(message: String, recipientToken: String) {
 
         currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
@@ -696,6 +534,72 @@ class ChattingActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    // Sends an important message notification using Firebase Cloud Messaging
+    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
+        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
+            if (task.isSuccessful) {
+                val currentUser: User? = task.result?.toObject(User::class.java)
+                try {
+                    val client = OkHttpClient()
+
+                    val jsonPayload = JSONObject().apply {
+                        put("message", JSONObject().apply {
+                            put("token", recipientToken)
+                            put("data", JSONObject().apply {
+                                put(
+                                    "title",
+                                    currentUser?.username ?: "New Message"
+                                ) // Sender's name
+                                put("body", message) // Message content
+                                put(
+                                    "isImportant",
+                                    true
+                                ) // Mark message as important (boolean value)
+                            })
+                            put("android", JSONObject().apply {
+                                put("priority", "high") // High priority for urgent delivery
+                                put("notification", JSONObject().apply {
+                                    put("vibrate", true) // Ensure vibration is enabled
+                                    put("sound", "default") // Default sound (ringtone)
+                                })
+                            })
+                        })
+                    }
+
+
+                    // Define the media type and request body
+                    val mediaType = "application/json; charset=utf-8".toMediaType()
+                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
+
+                    // Build the request
+                    val request = Request.Builder()
+                        .url("https://fcm.googleapis.com/v1/projects/your-project-id/messages:send")
+                        .post(requestBody)
+                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+
+                    // Execute the request
+                    client.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            e.printStackTrace()
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            if (!response.isSuccessful) {
+                                println("Failed to send notification: ${response.code}")
+                            } else {
+                                println("Notification sent successfully")
+                            }
+                        }
+                    })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
 

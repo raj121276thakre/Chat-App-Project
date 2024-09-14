@@ -4,10 +4,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -21,17 +19,17 @@ import com.example.chatapp.databinding.ActivityMainBinding
 import com.example.chatapp.utils.FirebaseUtil.currentUserDetails
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
-import retrofit2.Call
-import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
 
+    // ViewBinding to access views in the layout
     private lateinit var binding: ActivityMainBinding
+
     private lateinit var toolbarTitle: TextView
     private lateinit var token: String
 
-    // Declare the launcher at the top of your Activity/Fragment
+    // Launcher to request notification permission from the user
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -53,26 +51,19 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+
+        // Ask for notification permission if needed
         askNotificationPermission()
 
+        // Set up bottom navigation and toolbar behavior
         setupBottomNavigation()
 
+        // Get the Firebase Cloud Messaging token for the device
         getFCMToken()
-
-
-
-
 
     }
 
-
-
-
-
-
-
-
-
+    // Requests notification permission if the app is running on Android 13 (API 33) or higher
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -90,20 +81,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
-
+    // Fetches the FCM token and updates it in the Firestore for the current user
     fun getFCMToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task: Task<String?> ->
             if (task.isSuccessful) {
-                 token = task.result.toString()
+                token = task.result.toString()
                 Log.i("My Fcm Token : ", token!!)
                 currentUserDetails().update("fcmToken", token)
             }
         }
     }
 
-
+    // Sets up the bottom navigation menu and handles navigation between fragments
     private fun setupBottomNavigation() {
 
         val navHostFragment =
@@ -142,6 +131,7 @@ class MainActivity : AppCompatActivity() {
         changeToolbarTitle(navController)
     }
 
+    // Updates the toolbar title based on the current fragment destination
     private fun changeToolbarTitle(navController: NavController) {
         // Initialize toolbarTitle
         toolbarTitle = findViewById(R.id.toolbarTitle)
@@ -158,14 +148,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
-
-
-
-
-
-
-
 
 
 }

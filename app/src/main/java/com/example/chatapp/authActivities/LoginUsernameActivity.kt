@@ -17,7 +17,8 @@ import com.google.firebase.Timestamp
 
 class LoginUsernameActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginUsernameBinding
-   // private lateinit var userName: String
+
+    // private lateinit var userName: String
     private lateinit var phoneNumber: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,15 +33,14 @@ class LoginUsernameActivity : AppCompatActivity() {
         }
 
         phoneNumber = intent.getStringExtra("phone").toString()
-       // userName = binding.loginUsername.text.toString()
+        // userName = binding.loginUsername.text.toString()
 
         getUserNameFromFirebase()
 
         binding.loginLetMeInButton.setOnClickListener {
             val userName = binding.loginUsername.text.toString().trim()
-            setUserDataToFirebase(userName,phoneNumber)
+            setUserDataToFirebase(userName, phoneNumber)
         }
-
 
 
     }
@@ -49,7 +49,7 @@ class LoginUsernameActivity : AppCompatActivity() {
         setInProgress(true)
 
         if (userName.isEmpty() || userName.length < 3) {
-            binding.loginUsername.setError( "Username length should be at least 3 characters!")
+            binding.loginUsername.setError("Username length should be at least 3 characters!")
             setInProgress(false)
             return
         }
@@ -109,7 +109,11 @@ class LoginUsernameActivity : AppCompatActivity() {
                 Toast.makeText(this, "User data saved successfully", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to save user data: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Failed to save user data: ${exception.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
@@ -119,7 +123,7 @@ class LoginUsernameActivity : AppCompatActivity() {
         FirebaseUtil.currentUserDetails().get().addOnCompleteListener { task ->
             setInProgress(false)
             if (task.isSuccessful) {
-               val  document = task.result
+                val document = task.result
                 if (document != null && document.exists()) {
                     val userData = document.data
                     val user = document.toObject(User::class.java)

@@ -19,6 +19,7 @@ class SearchUserAdapter(
 ) : FirestoreRecyclerAdapter<User, SearchUserAdapter.UserViewHolder>(options) {
 
     private var currentUserId: String? = null
+
     inner class UserViewHolder(private val binding: ItemSearchUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -31,7 +32,7 @@ class SearchUserAdapter(
                 user.username
             }
 
-           // binding.userNameText.text = user.username
+            // binding.userNameText.text = user.username
             binding.phoneText.text = user.phone
 
             val profileImage = itemView.findViewById<CircleImageView>(R.id.profile_pic_image_view)

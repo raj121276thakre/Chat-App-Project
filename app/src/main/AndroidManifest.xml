@@ -2,14 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- All Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
-
 
 
     <application
@@ -23,13 +22,15 @@
         android:theme="@style/Theme.ChatApp"
         tools:targetApi="31">
 
-<!--        Notification icon and color -->
+        <!-- Sets the default icon for Firebase notifications -->
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher"/>
+            android:resource="@mipmap/ic_launcher_round"/>
 
+        <!-- Sets the default color for Firebase notifications -->
         <meta-data android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/blueIcon"/>
 
+        <!-- Sets the default channel ID for important messages notifications -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/important_message_channel" />
@@ -56,6 +57,8 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="false" />
+
+        <!-- SplashActivity: The initial activity displayed when the app is launched -->
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
@@ -66,6 +69,7 @@
             </intent-filter>
         </activity>
 
+        <!-- FirebaseMessaging: This service listens for Firebase Cloud Messaging (FCM) events -->
         <service
             android:name=".notification.FirebaseMessaging"
             android:exported="true">
@@ -74,14 +78,12 @@
             </intent-filter>
         </service>
 
+        <!-- ImportantMessageService: Service responsible for playing a ringtone for important message alerts -->
         <service
             android:name=".notification.ImportantMessageService"
             android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.FOREGROUND_SERVICE"
             android:exported="true" />
-
-
-
 
 
     </application>

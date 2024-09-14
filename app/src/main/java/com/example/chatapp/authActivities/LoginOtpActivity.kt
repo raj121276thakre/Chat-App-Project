@@ -17,7 +17,6 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
@@ -182,7 +181,7 @@ class LoginOtpActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Toast.makeText(this, "OTP verified successful", Toast.LENGTH_SHORT).show()
 
-                   val intent = Intent(this@LoginOtpActivity, LoginUsernameActivity::class.java)
+                    val intent = Intent(this@LoginOtpActivity, LoginUsernameActivity::class.java)
                     intent.putExtra("phone", phoneNumber)
                     startActivity(intent)
                     finish()

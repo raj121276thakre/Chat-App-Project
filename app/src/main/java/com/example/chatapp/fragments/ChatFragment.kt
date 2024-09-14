@@ -26,10 +26,6 @@ class ChatFragment : Fragment() {
     private var adapter: RecentChatAdapter? = null
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -103,7 +99,6 @@ class ChatFragment : Fragment() {
         super.onResume()
         adapter?.notifyDataSetChanged() // Restart listening when resumed
     }
-
 
 
     override fun onDestroyView() {
