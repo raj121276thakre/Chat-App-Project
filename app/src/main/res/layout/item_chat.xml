@@ -27,6 +27,7 @@
         android:layout_marginStart="10dp"
         android:layout_height="wrap_content"
         tools:text="Username"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="18sp"
         app:layout_constraintLeft_toRightOf="@id/ivProfileImageLL"
@@ -36,6 +37,7 @@
     <TextView
         android:id="@+id/tvLastMessage"
         android:layout_width="0dp"
+        android:textColor="@color/black"
         android:layout_marginStart="10dp"
         android:layout_height="wrap_content"
         tools:text="Last message"
@@ -52,7 +54,7 @@
         android:layout_height="wrap_content"
         tools:text="10:21 AM"
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@color/grayText2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvUsername"
         app:layout_constraintBottom_toBottomOf="@id/tvUsername"/>

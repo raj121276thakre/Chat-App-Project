@@ -66,7 +66,7 @@ class ImportantMessageService : Service() {
         return NotificationCompat.Builder(this, "important_message_channel")
             .setContentTitle("Important Message")
             .setContentText("You have an important message!")
-            .setSmallIcon(R.drawable.ic_chat_logo) // Ensure this icon exists in your drawable resources
+            .setSmallIcon(R.mipmap.ic_launcher_round) // Ensure this icon exists in your drawable resources
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setFullScreenIntent(pendingIntent, true)
             .build()
