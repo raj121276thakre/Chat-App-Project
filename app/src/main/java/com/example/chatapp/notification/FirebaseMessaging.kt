@@ -121,7 +121,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
         val channelID = if (isImportant == "true") importantChannelID else nonImportantChannelID
 
         val builder = NotificationCompat.Builder(this, channelID)
-            .setSmallIcon(R.drawable.ic_chat_logo) // Ensure this icon exists in your drawable resources
+            .setSmallIcon(R.mipmap.ic_launcher_round) // Ensure this icon exists in your drawable resources
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

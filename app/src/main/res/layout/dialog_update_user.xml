@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <RelativeLayout
+        android:id="@+id/selectImage"
+        android:layout_gravity="center"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circle_background"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_user_placeholder" />
+
+        <ImageView
+            android:id="@+id/edit_icon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignEnd="@id/profile_image"
+            android:layout_alignBottom="@id/profile_image"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/edit_icon_background"
+            android:padding="4dp"
+            android:src="@drawable/ic_edit" />
+    </RelativeLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:padding="12dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:id="@+id/editTextUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username" />
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:padding="12dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:id="@+id/editTextAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="About " />
+
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>

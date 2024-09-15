@@ -145,7 +145,7 @@
             android:layout_height="25dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_schedule_time"
-            app:tint="@color/blue" />
+            app:tint="@color/mainColor" />
 
         <EditText
             android:id="@+id/messageInputET"
@@ -167,6 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Important"
+            android:textColor="@color/black"
             android:layout_marginEnd="8dp"/>
 
         <ImageView
@@ -175,7 +176,9 @@
             android:layout_height="34dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_send"
-            app:tint="@color/blue" />
+            app:tint="@color/mainColor" />
+
+
     </LinearLayout>
 
 </RelativeLayout>

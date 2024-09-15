@@ -32,7 +32,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_arrow_back_24"
-                app:tint="@color/blueIcon"
+                app:tint="@color/mainColor"
                 android:layout_alignParentStart="true" />
 
             <TextView
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Search User"
-                android:textColor="@color/blueIcon"
+                android:textColor="@color/mainColor"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:layout_centerInParent="true"/>
@@ -85,6 +85,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:padding="10dp">
 
                 <ImageView
@@ -98,6 +99,8 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
+                    android:textColorHint="@color/grayText"
+                    android:textColor="@color/black"
                     android:id="@+id/searchBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

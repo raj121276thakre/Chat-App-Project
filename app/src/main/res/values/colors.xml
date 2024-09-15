@@ -3,7 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#4169E1</color>
-    <color name="light_grayish_blue">#AFBFEF</color>
+    <color name="light_grayish_blue">#6582D8</color>
     <color name="chat_bg">#F5F7FA</color>
 
     <color name="bluePrimary">#0055FF</color>
@@ -13,5 +13,8 @@
     <color name="grayText2">#6A6767</color>
     <color name="blueIcon">#0093FF</color>
     <color name="whiteBackground">#FFFFFF</color>
+
+    <color name="mainColor">#980BE4</color>
+
 
 </resources>
