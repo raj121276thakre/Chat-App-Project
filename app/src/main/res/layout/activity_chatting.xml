@@ -76,16 +76,17 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/ivCall"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_call"
-                android:visibility="visible"
                 app:tint="@color/black" />
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/ivVideoCall"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -102,7 +103,7 @@
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_menu"
+                android:src="@drawable/ic_schedule_time"
                 app:tint="@color/black" />
 
         </LinearLayout>

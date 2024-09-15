@@ -79,11 +79,11 @@
         </service>
 
         <!-- ImportantMessageService: Service responsible for playing a ringtone for important message alerts -->
-        <service
-            android:name=".notification.ImportantMessageService"
-            android:foregroundServiceType="mediaPlayback"
-            android:permission="android.permission.FOREGROUND_SERVICE"
-            android:exported="true" />
+<!--        <service-->
+<!--            android:name=".notification.ImportantMessageService"-->
+<!--            android:foregroundServiceType="mediaPlayback"-->
+<!--            android:permission="android.permission.FOREGROUND_SERVICE"-->
+<!--            android:exported="true" />-->
 
 
     </application>
