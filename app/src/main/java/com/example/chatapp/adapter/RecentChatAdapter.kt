@@ -98,4 +98,10 @@ class RecentChatAdapter(
     fun getChatAtPosition(position: Int): DocumentSnapshot {
         return snapshots.getSnapshot(position)
     }
+
+    override fun updateOptions(options: FirestoreRecyclerOptions<ChatRoomModel>) {
+        // Set new options and notify adapter of changes
+        super.updateOptions(options)
+        notifyDataSetChanged()
+    }
 }

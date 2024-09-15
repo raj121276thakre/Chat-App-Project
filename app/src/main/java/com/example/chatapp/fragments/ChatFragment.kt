@@ -24,6 +24,7 @@ class ChatFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var adapter: RecentChatAdapter? = null
+    private lateinit var chatQuery: Query
 
 
     override fun onCreateView(
@@ -41,22 +42,89 @@ class ChatFragment : Fragment() {
 
         setUpRecyclerView()
 
-        // Handle search input
         binding.searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                //filterChats(s.toString())
+                performSearch(s.toString().trim())  // Call the search function
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
 
         binding.fabNewChat.setOnClickListener {
             startActivity(Intent(requireContext(), SearchUserActivity::class.java))
         }
     }
 
+    private fun performSearch(searchText: String) {
+        if (searchText.isEmpty()) {
+            // Reset to the original query if search text is empty
+            chatQuery = FirebaseUtil.allChatroomCollectionReference()
+                .whereArrayContains("userIds", FirebaseUtil.currentUserId()!!)
+                .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
+
+            // Reset the adapter with the original query
+            val options = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
+                .setQuery(chatQuery, ChatRoomModel::class.java)
+                .build()
+            adapter?.updateOptions(options)
+
+        } else {
+            // Query usernames that match the search text (case-insensitive)
+            FirebaseUtil.allUserCollectionReference()
+                .orderBy("username")
+                .startAt(searchText.capitalize())
+                .endAt("${searchText.capitalize()}\uf8ff")
+                .get().addOnSuccessListener { querySnapshot ->
+                    val matchingUserIds = querySnapshot.documents.map { it.id }
+
+                    if (matchingUserIds.isNotEmpty()) {
+                        // Apply query only if there are matching users
+                        chatQuery = FirebaseUtil.allChatroomCollectionReference()
+                            .whereArrayContainsAny("userIds", matchingUserIds)
+                            .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
+
+                        val options = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
+                            .setQuery(chatQuery, ChatRoomModel::class.java)
+                            .build()
+
+                        adapter?.updateOptions(options)
+                    } else {
+                        // No matching users, set empty results
+                        val emptyOptions = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
+                            .setQuery(FirebaseUtil.allChatroomCollectionReference()
+                                .whereEqualTo("userIds", "null"), ChatRoomModel::class.java) // Dummy query that returns no results
+                            .build()
+
+                        adapter?.updateOptions(emptyOptions)
+                    }
+                }
+        }
+    }
+
+
+
     private fun setUpRecyclerView() {
+        // Set up the initial query
+        chatQuery = FirebaseUtil.allChatroomCollectionReference()
+            .whereArrayContains("userIds", FirebaseUtil.currentUserId()!!)
+            .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
+
+        val options: FirestoreRecyclerOptions<ChatRoomModel> = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
+            .setQuery(chatQuery, ChatRoomModel::class.java)
+            .build()
+
+        adapter = RecentChatAdapter(options, requireContext())
+
+        binding.recentChatsRV.layoutManager = LinearLayoutManager(requireContext())
+        binding.recentChatsRV.adapter = adapter
+    }
+
+
+
+  /*  private fun setUpRecyclerView() {
         val query: Query = FirebaseUtil.allChatroomCollectionReference()
             .whereArrayContains("userIds", FirebaseUtil.currentUserId()!!)
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
@@ -84,6 +152,8 @@ class ChatFragment : Fragment() {
         adapter?.startListening()
 
     }
+
+   */
 
     override fun onStart() {
         super.onStart()

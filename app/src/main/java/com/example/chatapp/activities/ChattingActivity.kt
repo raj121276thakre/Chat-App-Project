@@ -181,6 +181,9 @@ class ChattingActivity : AppCompatActivity() {
                 // Retrieve messages from the database
                 val messages = db.scheduledMessageDao().getAllScheduledMessages()
 
+                // Sort messages by timestamp in descending order
+                val sortedMessages = messages.sortedByDescending { it.timestamp }
+
                 // Inflate the custom layout
                 val dialogView = LayoutInflater.from(this@ChattingActivity)
                     .inflate(R.layout.dialog_scheduled_messages, null)
@@ -189,7 +192,7 @@ class ChattingActivity : AppCompatActivity() {
                 val recyclerView: RecyclerView =
                     dialogView.findViewById(R.id.recycler_view_scheduled_messages)
                 recyclerView.layoutManager = LinearLayoutManager(this@ChattingActivity)
-                recyclerView.adapter = ScheduledMessageAdapter(messages)
+                recyclerView.adapter = ScheduledMessageAdapter(sortedMessages)
 
                 // Create and show the AlertDialog
                 AlertDialog.Builder(this@ChattingActivity)
@@ -273,10 +276,12 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     // Utility method to convert dp to px
     private fun dpToPx(dp: Int): Int {
-        val density = resources.displayMetrics.density
-        return (dp * density).toInt()
+        return (dp * resources.displayMetrics.density).toInt()
     }
 
     // Adjust the layout when the keyboard is shown or hidden
@@ -287,26 +292,27 @@ class ChattingActivity : AppCompatActivity() {
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             val rect = Rect()
             rootView.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = rootView.height
+            val screenHeight = rootView.rootView.height
             val keypadHeight = screenHeight - rect.bottom
 
-            val layoutParams = layoutMessageInput.layoutParams as RelativeLayout.LayoutParams
-            val marginInDp = if (keypadHeight > screenHeight * 0.15) {
-                // Keyboard is visible, adjust bottom margin in dp
-                // dpToPx(keypadHeight  / resources.displayMetrics.density.toInt())
-                dpToPx((keypadHeight - 300) / resources.displayMetrics.density.toInt())
-
+            // Calculate the bottom margin based on the keyboard height minus 10dp
+            val marginDp = if (keypadHeight > screenHeight * 0.15) {
+                // Keyboard is visible
+                (keypadHeight - dpToPx(26)) // Subtract 10dp from the keyboard height
             } else {
-                // Keyboard is hidden, reset bottom margin in dp
-                dpToPx(14)
+                // Keyboard is hidden, reset to default margin
+                dpToPx(14) // Default margin value
             }
 
-            layoutParams.bottomMargin = marginInDp
+            val layoutParams = layoutMessageInput.layoutParams as RelativeLayout.LayoutParams
+            layoutParams.bottomMargin = marginDp
             layoutMessageInput.layoutParams = layoutParams
-
-
         }
     }
+
+
+
+
 
     // Set up the chat RecyclerView with Firestore messages
     private fun setUpChatRecyclerview() {

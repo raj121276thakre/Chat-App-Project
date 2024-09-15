@@ -51,12 +51,14 @@
             android:exported="false" />
         <activity
             android:name=".activities.ChattingActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="false" />
+
+<!--                android:fitsSystemWindows="true"
+ android:windowSoftInputMode="adjustPan"-->
 
         <!-- SplashActivity: The initial activity displayed when the app is launched -->
         <activity
