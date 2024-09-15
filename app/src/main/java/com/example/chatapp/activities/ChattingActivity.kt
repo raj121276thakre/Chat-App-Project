@@ -236,7 +236,7 @@ class ChattingActivity : AppCompatActivity() {
                 val scheduledMessage = ScheduledMessage(
                     message = message,
                     timestamp = scheduledTime,
-                    isImportant = binding.importantMessageCB.isChecked,
+                    isImportant = isImportant,
                     senderId = FirebaseUtil.currentUserId()!!,
                     chatroomId = chatroomId
                 )
