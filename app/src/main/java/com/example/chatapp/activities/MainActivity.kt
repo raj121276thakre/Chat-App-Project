@@ -1,10 +1,19 @@
 package com.example.chatapp.activities
 
 import android.Manifest
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,7 +70,29 @@ class MainActivity : AppCompatActivity() {
         // Get the Firebase Cloud Messaging token for the device
         getFCMToken()
 
+        // Menu icon click listener to show scheduled messages
+        binding.aboutApp.setOnClickListener {
+            showAboutDialog()
+        }
+
     }
+
+
+    private fun showAboutDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE) // before
+        dialog.setContentView(R.layout.dialog_about_app)
+        dialog.setCancelable(true)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.show()
+        dialog.window!!.attributes = lp
+    }
+
+
 
     // Requests notification permission if the app is running on Android 13 (API 33) or higher
     private fun askNotificationPermission() {
