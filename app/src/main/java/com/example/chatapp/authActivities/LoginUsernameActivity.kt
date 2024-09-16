@@ -106,12 +106,12 @@ class LoginUsernameActivity : AppCompatActivity() {
         FirebaseUtil.currentUserDetails()
             .set(user)
             .addOnSuccessListener {
-                Toast.makeText(this, "User data saved successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Logined successfully", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(
                     this,
-                    "Failed to save user data: ${exception.message}",
+                    "Something went wrong : ${exception.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

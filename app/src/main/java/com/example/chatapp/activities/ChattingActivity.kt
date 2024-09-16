@@ -122,7 +122,7 @@ class ChattingActivity : AppCompatActivity() {
         // Set an OnCheckedChangeListener to update isImportant dynamically
         importantMessageCB.setOnCheckedChangeListener { _, isChecked ->
             isImportant = isChecked
-            Toast.makeText(this, "isImportant: $isImportant", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "isImportant: $isImportant", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -220,7 +220,7 @@ class ChattingActivity : AppCompatActivity() {
                 calendar.set(Calendar.MINUTE, minute)
                 calendar.set(Calendar.SECOND, 0)
                 scheduledTimeInMillis = calendar.timeInMillis
-                Toast.makeText(this, "Message scheduled for $hourOfDay:$minute", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Scheduled Time : $hourOfDay:$minute", Toast.LENGTH_SHORT)
                     .show()
             },
             calendar.get(Calendar.HOUR_OF_DAY),
@@ -661,198 +661,6 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
-
-
-
-
-
-    /*
-      // Sends a regular notification using Firebase Cloud Messaging
-    private fun sendNotification(message: String, recipientToken: String) {
-        Log.d(
-            "Not ..Important function",
-            "$message"
-        )
-        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
-            if (task.isSuccessful) {
-                val currentUser: User? = task.result.toObject(User::class.java)
-                try {
-
-                    val client = OkHttpClient()
-
-                    // Construct the JSON payload
-                    val jsonPayload = JSONObject()
-                        .put(
-                            "message", JSONObject()
-                                .put("token", recipientToken)
-                                .put(
-                                    "notification", JSONObject()
-                                        .put("title", currentUser!!.username)
-                                        .put("body", message)
-                                )
-                                .put(
-                                    "android", JSONObject()
-                                        .put("priority", "high")
-                                )
-                                .put(
-                                    "apns", JSONObject()
-                                        .put(
-                                            "headers", JSONObject()
-                                                .put("apns-priority", "10")
-                                        )
-                                )
-                                .put(
-                                    "data",
-                                    JSONObject().apply {
-                                        put(
-                                            "title",
-                                            currentUser?.username ?: "New Message"
-                                        ) // Sender's name
-                                        put("body", message) // Message content
-                                        put(
-                                            "isImportant",
-                                            "false"
-                                        ) // Mark message as important (boolean value)
-                                        put("userId", currentUser.userId)
-
-                                    }
-//                                    JSONObject()                       // Custom data payload
-//                                        .put("userId", currentUser.userId)
-                                )
-                        )
-
-
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-
-                    //val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), jsonPayload.toString())
-
-                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
-                    val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/chat-app-56add/messages:send")
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
-                        .addHeader("Content-Type", "application/json")
-                        .build()
-
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            if (!response.isSuccessful) {
-                                println("Failed to send notification: ${response.code}")
-                                println("Response body: ${response.body?.string()}")
-                                Log.i("Response body", "${response.body?.string()}")
-                            } else {
-                                println("Normal Notification sent successfully")
-                            }
-                        }
-                    })
-
-
-                } catch (e: Exception) {
-
-                }
-            }
-        }
-
-
-    }
-
-
-
-    private fun sendImportantMessageNotification(message: String, recipientToken: String) {
-        Log.d(
-            "Important function",
-            "$message"
-        )
-        currentUserDetails().get().addOnCompleteListener { task: Task<DocumentSnapshot> ->
-            if (task.isSuccessful) {
-                val currentUser: User? = task.result.toObject(User::class.java)
-                try {
-
-                    val client = OkHttpClient()
-
-                    // Construct the JSON payload
-                    val jsonPayload = JSONObject()
-                        .put(
-                            "message", JSONObject()
-                                .put("token", recipientToken)
-                                .put(
-                                    "notification", JSONObject()
-                                        .put("title", currentUser!!.username)
-                                        .put("body", message)
-                                )
-                                .put(
-                                    "android", JSONObject()
-                                        .put("priority", "high")
-                                )
-                                .put(
-                                    "apns", JSONObject()
-                                        .put(
-                                            "headers", JSONObject()
-                                                .put("apns-priority", "10")
-                                        )
-                                )
-                                .put(
-                                    "data",
-                                    JSONObject().apply {
-                                        put(
-                                            "title",
-                                            currentUser?.username ?: "New Message"
-                                        ) // Sender's name
-                                        put("body", message) // Message content
-                                        put(
-                                            "isImportant",
-                                            "true"
-                                        ) // Mark message as important (boolean value)
-                                        put("userId", currentUser.userId)
-
-                                    }
-//                                    JSONObject()                       // Custom data payload
-//                                        .put("userId", currentUser.userId)
-                                )
-                        )
-
-
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-
-                    //val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), jsonPayload.toString())
-
-                    val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
-                    val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/chat-app-56add/messages:send")
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
-                        .addHeader("Content-Type", "application/json")
-                        .build()
-
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            if (!response.isSuccessful) {
-                                println("Failed to send notification: ${response.code}")
-                                println("Response body: ${response.body?.string()}")
-                                Log.i("Response body", "${response.body?.string()}")
-                            } else {
-                                println("Normal Notification sent successfully")
-                            }
-                        }
-                    })
-
-
-                } catch (e: Exception) {
-
-                }
-            }
-        }
-    }
-
-     */
 
 
 }
