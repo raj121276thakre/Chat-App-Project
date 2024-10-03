@@ -3,11 +3,15 @@ package com.example.chatapp.activities
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +68,8 @@ class MainActivity : AppCompatActivity() {
         // Ask for notification permission if needed
         askNotificationPermission()
 
+        requestDoNotDisturbPermission()
+
         // Set up bottom navigation and toolbar behavior
         setupBottomNavigation()
 
@@ -75,6 +81,16 @@ class MainActivity : AppCompatActivity() {
             showAboutDialog()
         }
 
+    }
+
+    // Function to request Do Not Disturb permission
+    private fun requestDoNotDisturbPermission() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
+            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            startActivity(intent)
+        }
     }
 
 

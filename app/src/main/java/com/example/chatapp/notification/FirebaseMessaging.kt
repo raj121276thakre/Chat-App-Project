@@ -8,8 +8,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -49,12 +53,48 @@ class FirebaseMessaging : FirebaseMessagingService() {
         } else {
             Log.e("FirebaseMessaging", "Received empty message data.")
         }
+
+
     }
+
+
+
+
+    private fun overrideSilentModeAndDND() {
+        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val previousRingerMode = audioManager.ringerMode
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Request Do Not Disturb (DND) permission if needed
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
+            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+
+        // Switch to the main thread to modify UI-related components like audio settings
+        Handler(Looper.getMainLooper()).post {
+            // Override silent mode by setting ringer mode to normal
+            audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+
+            // Restore the previous ringer mode after 30 seconds
+            Handler(Looper.getMainLooper()).postDelayed({
+                audioManager.ringerMode = previousRingerMode // Restore previous mode
+            }, 30000) // 30 seconds delay
+        }
+    }
+
 
     private fun showNotification(title: String, body: String, isImportant: String, userId: String) {
         // Define channel IDs for important and non-important messages
         val importantChannelID = "important_channel"
         val nonImportantChannelID = "non_important_channel"
+
+        // Check if the message is important and override silent/DND modes
+         if (isImportant == "true") {
+            overrideSilentModeAndDND() // Ensure this runs before playing the notification
+        }
+
 
         // Check the Android version to create notification channels
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
