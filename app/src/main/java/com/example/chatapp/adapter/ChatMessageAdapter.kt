@@ -1,5 +1,7 @@
 package com.example.chatapp.adapter
 
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import com.example.chatapp.databinding.ItemChatOutgoingBinding
 import com.example.chatapp.models.ChatMessageModel
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -60,6 +63,10 @@ class ChatMessageAdapter(
             holder.binding.apply {
                 tvMessage.text = model.message
                 tvTimestamp.text = model.timestamp?.toDate()?.let { timeFormat.format(it) } ?: ""
+
+
+
+
             }
         } else if (holder is OutgoingMessageViewHolder) {
             holder.binding.apply {
@@ -70,9 +77,13 @@ class ChatMessageAdapter(
                 // Display or hide the progress bar based on whether the message is scheduled
                 progressBar.visibility = if (model.isScheduled) View.VISIBLE else View.GONE
 
+
+
             }
         }
     }
+
+
 
 
     override fun getItemViewType(position: Int): Int {

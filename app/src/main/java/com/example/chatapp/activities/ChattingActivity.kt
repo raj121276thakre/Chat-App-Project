@@ -453,10 +453,10 @@ class ChattingActivity : AppCompatActivity() {
 
                     if (isImportant) {
                         sendImportantMessageNotification(message, otherUser.fcmToken)
-                        Toast.makeText(this,"$isImportant",Toast.LENGTH_LONG).show()
+                       // Toast.makeText(this,"$isImportant",Toast.LENGTH_LONG).show()
                     } else {
                         sendNotification(message, otherUser.fcmToken)
-                        Toast.makeText(this,"$isImportant",Toast.LENGTH_LONG).show()
+                       // Toast.makeText(this,"$isImportant",Toast.LENGTH_LONG).show()
                     }
                     // Clear the message from the EditText if the message was sent successfully
                     binding.messageInputET
