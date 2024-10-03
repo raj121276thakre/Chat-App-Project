@@ -9,7 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.media.Ringtone
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -27,6 +29,10 @@ class FirebaseMessaging : FirebaseMessagingService() {
 
     private val channelID = "important_message_channel"
     private val channelName = "Important Message Channel"
+
+    companion object {
+        var ringtone: Ringtone? = null // Static Ringtone reference
+    }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
@@ -80,7 +86,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
             // Restore the previous ringer mode after 30 seconds
             Handler(Looper.getMainLooper()).postDelayed({
                 audioManager.ringerMode = previousRingerMode // Restore previous mode
-            }, 30000) // 30 seconds delay
+            }, 10000) // 30 seconds delay
         }
     }
 
@@ -109,11 +115,13 @@ class FirebaseMessaging : FirebaseMessagingService() {
             ).apply {
                 description = "Channel for important chat notifications"
                 enableVibration(true)
-                val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-                setSound(
-                    soundUri,
-                    Notification.AUDIO_ATTRIBUTES_DEFAULT
-                ) // Play ringtone for important messages
+               // val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+                setSound(getCustomRingtoneUri(), null)
+
+//                setSound(
+//                    soundUri,
+//                    Notification.AUDIO_ATTRIBUTES_DEFAULT
+//                ) // Play ringtone for important messages
             }
 
             // Create the channel for non-important messages
@@ -157,6 +165,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setFullScreenIntent(pendingIntent, true)
             .setAutoCancel(true) // Cancel the notification when clicked
+            .setDeleteIntent(getDeleteIntent()) // Set the delete intent to stop ringtone
 
         // Customize notification for important messages
         if (isImportant == "true") {
@@ -168,7 +177,8 @@ class FirebaseMessaging : FirebaseMessagingService() {
                     1000
                 )
             ) // Vibration pattern for important messages
-            builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND) // Default lights and sound
+            builder.setSound(getCustomRingtoneUri()) // Use custom ringtone
+           // builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND) // Default lights and sound
         } else {
             builder.setSound(null) // No sound for non-important messages
             builder.setVibrate(null) // No vibration for non-important messages
@@ -182,11 +192,43 @@ class FirebaseMessaging : FirebaseMessagingService() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             notificationManager.notify(0, builder.build())
+
+            if (isImportant == "true") {
+                playCustomRingtone() // Play ringtone immediately for important messages
+
+                // Optional: Stop the ringtone after a set duration (e.g., 30 seconds)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    stopRingtone()
+                }, 10000)
+            }
+
+
+
         } else {
             Log.e("FirebaseMessaging", "Notification permission not granted.")
         }
     }
 
+
+    private fun getDeleteIntent(): PendingIntent {
+        val intent = Intent(this, NotificationDismissedReceiver::class.java)
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    }
+
+    private fun getCustomRingtoneUri(): Uri {
+        return Uri.parse("android.resource://${packageName}/raw/ringtone") // Ensure the file is in res/raw
+    }
+
+    private fun playCustomRingtone() {
+        val ringtoneUri = getCustomRingtoneUri()
+        ringtone = RingtoneManager.getRingtone(applicationContext, ringtoneUri)
+        ringtone?.play() // Play the ringtone immediately
+    }
+
+    fun stopRingtone() {
+        ringtone?.stop() // Stop the ringtone if it's playing
+        ringtone = null // Clear the ringtone reference
+    }
 
 
 
