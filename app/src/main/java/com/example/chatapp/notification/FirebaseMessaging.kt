@@ -1,7 +1,6 @@
 package com.example.chatapp.notification
 
 import android.Manifest
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -64,12 +63,11 @@ class FirebaseMessaging : FirebaseMessagingService() {
     }
 
 
-
-
     private fun overrideSilentModeAndDND() {
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val previousRingerMode = audioManager.ringerMode
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Request Do Not Disturb (DND) permission if needed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
@@ -97,7 +95,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
         val nonImportantChannelID = "non_important_channel"
 
         // Check if the message is important and override silent/DND modes
-         if (isImportant == "true") {
+        if (isImportant == "true") {
             overrideSilentModeAndDND() // Ensure this runs before playing the notification
         }
 
@@ -115,7 +113,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
             ).apply {
                 description = "Channel for important chat notifications"
                 enableVibration(true)
-               // val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+                // val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
                 setSound(getCustomRingtoneUri(), null)
 
 //                setSound(
@@ -178,7 +176,7 @@ class FirebaseMessaging : FirebaseMessagingService() {
                 )
             ) // Vibration pattern for important messages
             builder.setSound(getCustomRingtoneUri()) // Use custom ringtone
-           // builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND) // Default lights and sound
+            // builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND) // Default lights and sound
         } else {
             builder.setSound(null) // No sound for non-important messages
             builder.setVibrate(null) // No vibration for non-important messages
@@ -203,7 +201,6 @@ class FirebaseMessaging : FirebaseMessagingService() {
             }
 
 
-
         } else {
             Log.e("FirebaseMessaging", "Notification permission not granted.")
         }
@@ -212,7 +209,12 @@ class FirebaseMessaging : FirebaseMessagingService() {
 
     private fun getDeleteIntent(): PendingIntent {
         val intent = Intent(this, NotificationDismissedReceiver::class.java)
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        return PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     private fun getCustomRingtoneUri(): Uri {
@@ -229,8 +231,6 @@ class FirebaseMessaging : FirebaseMessagingService() {
         ringtone?.stop() // Stop the ringtone if it's playing
         ringtone = null // Clear the ringtone reference
     }
-
-
 
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.chatapp.R
@@ -66,6 +67,13 @@ class RecentChatAdapter(
                             context.startActivity(intent)
                         }
 
+
+                        // Set long click listener
+                        binding.root.setOnLongClickListener {
+                            showDeleteConfirmationDialog(chat) // Show delete dialog
+                            true // Return true to indicate the long click was handled
+                        }
+
                     }
 
                 }
@@ -81,6 +89,38 @@ class RecentChatAdapter(
 
         }
     }
+
+
+    private fun showDeleteConfirmationDialog(chat: ChatRoomModel) {
+        // Create an AlertDialog Builder
+        val builder = android.app.AlertDialog.Builder(context)
+        builder.setTitle("Delete Chat")
+        builder.setMessage("Are you sure you want to delete this chat?")
+        builder.setPositiveButton("Yes") { dialog, which ->
+            // Handle the deletion of the chat
+            deleteChat(chat)
+        }
+        builder.setNegativeButton("No") { dialog, which ->
+            dialog.dismiss() // Just dismiss the dialog
+        }
+        builder.show() // Show the dialog
+    }
+
+
+    private fun deleteChat(chat: ChatRoomModel) {
+        // Assuming you have the chat document reference
+        val chatDocRef = FirebaseUtil.getChatroomReference(chat.chatRoomId) // You need to implement this
+        chatDocRef.delete().addOnSuccessListener {
+            // Optionally show a toast message
+            Toast.makeText(context, "Chat deleted successfully", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            Log.e("RecentChatAdapter", "Error deleting chat: ${e.message}")
+            // Optionally show an error message
+            Toast.makeText(context, "Failed to delete chat", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val binding = ItemChatBinding.inflate(
