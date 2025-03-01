@@ -155,7 +155,7 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) :
 
                     val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
                     val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/chat-app-56add/messages:send")
+                        .url("https://fcm.googleapis.com/v1/projects/chat-app-2025-a5acd/messages:send")
                         .post(requestBody)
                         .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
                         .addHeader("Content-Type", "application/json")
@@ -249,7 +249,7 @@ class SendMessageWorker(context: Context, workerParams: WorkerParameters) :
 
                     val requestBody = RequestBody.create(mediaType, jsonPayload.toString())
                     val request = Request.Builder()
-                        .url("https://fcm.googleapis.com/v1/projects/chat-app-56add/messages:send")
+                        .url("https://fcm.googleapis.com/v1/projects/chat-app-2025-a5acd/messages:send")
                         .post(requestBody)
                         .addHeader("Authorization", "Bearer ${AccessToken.getAccessToken()}")
                         .addHeader("Content-Type", "application/json")

@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.chatapp.LoginActivity
 import com.example.chatapp.R
 import com.example.chatapp.authActivities.LoginPhoneNumberActivity
 import com.example.chatapp.models.User
@@ -83,7 +84,7 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(Intent(this, MainActivity::class.java))
                 } else {
                     // User is not logged in, navigate to LoginActivity
-                    startActivity(Intent(this, LoginPhoneNumberActivity::class.java))
+                    startActivity(Intent(this, LoginActivity::class.java))
                 }
                 finish()
 

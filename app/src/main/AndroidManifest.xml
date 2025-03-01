@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- All Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-
 
     <application
         android:allowBackup="true"
@@ -24,21 +21,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
         <!-- Sets the default icon for Firebase notifications -->
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher_round"/>
-
-        <!-- Sets the default color for Firebase notifications -->
-        <meta-data android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/blueIcon"/>
-
-        <!-- Sets the default channel ID for important messages notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher_round" /> <!-- Sets the default color for Firebase notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/blueIcon" /> <!-- Sets the default channel ID for important messages notifications -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/important_message_channel" />
-
-
 
         <activity
             android:name=".activities.SearchUserActivity"
@@ -54,16 +49,16 @@
             android:exported="false" />
         <activity
             android:name=".activities.ChattingActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activities.MainActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:exported="false" />
-
-<!--                android:fitsSystemWindows="true"
- android:windowSoftInputMode="adjustPan"-->
-
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing" />
+        <!--
+                android:fitsSystemWindows="true"
+ android:windowSoftInputMode="adjustPan"
+        -->
         <!-- SplashActivity: The initial activity displayed when the app is launched -->
         <activity
             android:name=".activities.SplashActivity"
@@ -73,9 +68,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- FirebaseMessaging: This service listens for Firebase Cloud Messaging (FCM) events -->
+        </activity> <!-- FirebaseMessaging: This service listens for Firebase Cloud Messaging (FCM) events -->
         <service
             android:name=".notification.FirebaseMessaging"
             android:exported="true">
@@ -86,10 +79,9 @@
 
         <receiver android:name=".notification.NotificationDismissedReceiver" />
 
-
-
-
-
+        <meta-data
+            android:name="com.google.android.gms.auth.api.signin.WebClientId"
+            android:value="@string/default_web_client_id" />
     </application>
 
 </manifest>

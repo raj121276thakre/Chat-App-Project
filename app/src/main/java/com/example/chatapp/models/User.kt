@@ -10,7 +10,7 @@ data class User(
     val username: String = "",
     val phone: String = "",
     val createdTimestamp: Timestamp? = null,
-    val profilePictureUrl: String = "",
+    val profilePictureUrl:  String? = null,
     val about: String = "Hey there! I am using ChatApp.",
     val fcmToken: String = ""
 

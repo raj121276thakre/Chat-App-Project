@@ -106,6 +106,7 @@ dependencies {
 
     //for scheduling message
     implementation("androidx.work:work-runtime-ktx:2.8.0")  // Check for the latest version
+    implementation("com.google.android.gms:play-services-auth:20.7.0")  // Check for the latest version
 
 
 }
